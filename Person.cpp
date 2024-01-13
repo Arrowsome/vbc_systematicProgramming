@@ -4,6 +4,8 @@
 # include <algorithm>
 # include <iomanip>
 # include <random>
+# include <fstream>
+# include <sstream>
 using namespace std;
 
 enum HomeworkFinalScoreType {
@@ -42,14 +44,19 @@ class Person {
         }
 
         double calcMedian(const vector<double>& numbers) {
-            double midNum1 = numbers[(numbers.size() / 2) - 1];
-            double midNum2 = numbers[(numbers.size() / 2) + 1];
-            return (midNum1 + midNum2) / 2;
+            size_t size = numbers.size();
+            if (size % 2 == 0) {
+                double midNum1 = numbers[size / 2 - 1];
+                double midNum2 = numbers[size / 2];
+                return (midNum1 + midNum2) / 2;
+            } else {
+                return numbers[size / 2];
+            }
         }
 
         double generateRandomScore() {
             random_device rd;
-            mt19937 gen(rd());  // Mersenne Twister 19937 generator
+            mt19937 gen(rd());
             uniform_real_distribution<double> distribution(1.0, 10.0);
 
             return distribution(gen);
@@ -77,46 +84,20 @@ class Person {
         }
 
         friend istream& operator>>(istream& in, Person& person) {
-            cout << "Enter firstname: ";
-            in >> person.mFirstname;
-            cout << "Enter lastname: ";
-            in >> person.mLastname;
-
-            cout << "You have the option to generate scores randomly (y/N): ";
-            string randomScoresInput;
-            cin >> randomScoresInput;
-            bool randomize = randomScoresInput == "y" || randomScoresInput == "Y";
-
-            if (randomize) {
-                person.mExamScore = person.generateRandomScore();
-                person.mHomeworkScores.push_back(person.generateRandomScore());
-                person.mHomeworkScores.push_back(person.generateRandomScore());
-                person.mHomeworkScores.push_back(person.generateRandomScore());
-            } else {
-                cout << "Enter homework scores one by one (enter `-1` to finish): " << endl;
-                double hwScoreInput;
-                while ((in >> hwScoreInput) && hwScoreInput != -1) {
-                    person.mHomeworkScores.push_back(hwScoreInput);
-                }
-
-                cout << "Enter exam score: ";
-                in >> person.mExamScore;
-            }
-
+            person.mHomeworkScores.resize(5);
+            in >> person.mFirstname >> person.mLastname >> person.mHomeworkScores[0] >> person.mHomeworkScores[1] >> person.mHomeworkScores[2] >> person.mHomeworkScores[3] >> person.mHomeworkScores[4] >> person.mExamScore;
+            person.mFinalGrade = person.calcFinalGrade();
             return in;
         }
 
         friend ostream& operator<<(ostream& os, Person& person) {
-            os << person.mFirstname << "            " << person.mLastname << "          " << fixed << setprecision(2) << person.mFinalGrade;
+            os << left << setw(25) << person.mFirstname << setw(25) << person.mLastname << setw(25) << fixed << setprecision(2) << person.mFinalGrade;
             return os;
         }
 };
 
 int main() {
-    cout << "Enter the number of students: ";
     vector<Person> students;
-    int numOfStudents = 0;
-    cin >> numOfStudents;
 
     cout << "Enter homework final score calculation type (`a` for average, `m` for median): ";
     string inputHwFinalScoreType;
@@ -130,25 +111,32 @@ int main() {
         throw invalid_argument("Homework final score calculation type should be either `a` (average) or `m` (median)");
     }
 
+    ifstream file("Students.txt");
 
-    int counter = 0;
-    for (int i = 0; i < numOfStudents; ++i) {
-        cout << "\n• Enter data for student number " << ++counter << ":\n\n";
-        Person p(hwFinalScoreType);
-        cin >> p;
-        students.push_back(p);
+    string header;
+    getline(file, header);
+
+    string line;
+    int numOfStudents = 0;
+    while(getline(file, line)) {
+        istringstream iss(line);
+        Person student(hwFinalScoreType);
+        iss >> student;
+        ++numOfStudents;
+        students.push_back(student);
     }
 
-    string hwCalcTypeTitle;
+
+    string finalPointTitle;
     if (hwFinalScoreType == AVERAGE) {
-        hwCalcTypeTitle = "Ave.";
+        finalPointTitle = "Final_Point(Ave.)";
     } else {
-        hwCalcTypeTitle = "Med.";
+        finalPointTitle = "Final_Point(Med.)";
     }
-    cout << "Name       Surname       Final_Point(" << hwCalcTypeTitle << ")" << endl;
-    cout << "-------------------------------------------" << endl;
+    cout << left << setw(25) << "Name" <<  setw(25) << "Surname" << setw(25) << finalPointTitle << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
 
-    for (int i = 0; i < students.size(); i++) {
+    for (int i = 0; i < numOfStudents; i++) {
         cout << students[i] << endl;
     }
 
