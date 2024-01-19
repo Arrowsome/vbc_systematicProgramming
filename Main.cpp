@@ -92,31 +92,30 @@ int main() {
     }
 
     // Output students to standard output
-    string finalPointTitle;
-        if (hwFinalScoreType == AVERAGE) {
-            finalPointTitle = "Final_Point(Ave.)";
-        } else {
-            finalPointTitle = "Final_Point(Med.)";
-        }
-    cout << left << setw(25) << "Name" <<  setw(25) << "Surname" << setw(25) << finalPointTitle << endl;
-    cout << "------------------------------------------------------------------------------" << endl;
+    // string finalPointTitle;
+    // if (hwFinalScoreType == AVERAGE) {
+    //     finalPointTitle = "Final_Point(Ave.)";
+    // } else {
+    //         finalPointTitle = "Final_Point(Med.)";
+    // }
+    // cout << left << setw(25) << "Name" <<  setw(25) << "Surname" << setw(25) << finalPointTitle << endl;
+    // cout << "------------------------------------------------------------------------------" << endl;
 
-    cout << "Measuring time for standard outputs:\n";
-    MEASURE_TIME(standard_output, {
-        cout << "• Passed:\n";
-        list<Person>::iterator it;
-        for (it = passedStudents.begin(); it != passedStudents.end(); it++)
-        {
-            Person p = *it;
-            cout << p << endl;
-        }
+    // cout << "Measuring time for standard outputs:\n";
+    // MEASURE_TIME(standard_output, {
+    //     cout << "• Passed:\n";
+    //     list<Person>::iterator it;
+    //     for (it = passedStudents.begin(); it != passedStudents.end(); it++)
+    //     {
+    //         Person p = *it;
+    //         cout << p << endl;
+    //     }
 
-        cout << "• Failed:\n";
-        for (int i = 0; i < failedStudents.size(); i++) {
-            cout << failedStudents[i] << endl;
-        }
-    });
-    
+    //     cout << "• Failed:\n";
+    //     for (int i = 0; i < failedStudents.size(); i++) {
+    //         cout << failedStudents[i] << endl;
+    //     }
+    // });
 
     cout << "Measuring time for file outputs:\n";
     MEASURE_TIME(file_output,{
@@ -126,7 +125,7 @@ int main() {
         for (it = passedStudents.begin(); it != passedStudents.end(); it++)
         {
             Person p = *it;
-            cout << p << endl;
+            output_passed_file << p << "\n";
         }
         cout << "File passed.txt was generated!" << endl;
         output_passed_file.close();
