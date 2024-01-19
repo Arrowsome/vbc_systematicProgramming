@@ -9,6 +9,8 @@
 # include <iterator>
 # include "Person.h"
 # include <chrono>
+# include <list>
+# include <deque>
 using namespace std;
 
 #define MEASURE_TIME(tag, code) \
@@ -36,8 +38,8 @@ int main() {
     int fileNum;
     cin >> fileNum;
 
-    vector<Person> passedStudents;
-    vector<Person> failedStudents;
+    list<Person> passedStudents;
+    deque<Person> failedStudents;
 
     cout << "Enter homework final score calculation type (`a` for average, `m` for median): ";
     string hwFinalScoreTypeInput;
@@ -102,8 +104,11 @@ int main() {
     cout << "Measuring time for standard outputs:\n";
     MEASURE_TIME(standard_output, {
         cout << "• Passed:\n";
-        for (int i = 0; i < passedStudents.size(); i++) {
-            cout << passedStudents[i] << endl;
+        list<Person>::iterator it;
+        for (it = passedStudents.begin(); it != passedStudents.end(); it++)
+        {
+            Person p = *it;
+            cout << p << endl;
         }
 
         cout << "• Failed:\n";
@@ -117,8 +122,11 @@ int main() {
     MEASURE_TIME(file_output,{
         // Output students vector to files
         ofstream output_passed_file("./passed.txt");
-        for (int i = 0; i < passedStudents.size(); ++i) {
-            output_passed_file << passedStudents[i] << "\n";
+        list<Person>::iterator it;
+        for (it = passedStudents.begin(); it != passedStudents.end(); it++)
+        {
+            Person p = *it;
+            cout << p << endl;
         }
         cout << "File passed.txt was generated!" << endl;
         output_passed_file.close();
